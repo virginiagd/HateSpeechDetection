@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hate Speech Detection</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%; /* 让页面填充整个视窗 */
+        display: flex; /* 开启 Flexbox 布局 */
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        background-attachment: fixed; /* 背景固定 */
+        background-size: cover; /* 背景自适应 */
+        font-family: Arial, sans-serif; /* 设置全局字体 */
+        color: white; /* 全局文本颜色 */
+      }
+
+      .container {
+        text-align: center; /* 文本内容居中 */
+        width: 100%;
+        max-width: 500px; /* 设置最大宽度 */
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.9); /* 半透明白色背景 */
+        border-radius: 10px; /* 圆角效果 */
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+        color: #333; /* 文本颜色 */
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        color: #6a11cb;
+        margin-bottom: 20px;
+      }
+
+      textarea {
+        width: 100%;
+        resize: vertical; /* 限制只能垂直调整大小 */
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+
+      button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        background-color: #2575fc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #6a11cb;
+      }
+
+      #result {
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hate Speech Detection</h1>
+      <div class="card">
+        <textarea
+          id="textInput"
+          class="form-control mb-3"
+          rows="4"
+          placeholder="Enter text here..."
+        ></textarea>
+        <p>
+          Note: This model is trained to detect hate speech. The model will
+          return a label and a score. The label is the predicted class of the
+          input text, and the score is the probability of the sentence being a
+          hate speech.
+        </p>
+        <button onclick="detect()">Detect</button>
+        <p id="result"></p>
+      </div>
+    </div>
+
+    <script>
+      async function detect() {
+        textInput = document.getElementById("textInput").value;
+        if (!textInput) {
+          alert("Please enter some text!");
+          return;
+        }
+
+        const response = await fetch("http://127.0.0.1:5000/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: textInput }),
+        });
+
+        const resultDiv = document.getElementById("result");
+        if (response.ok) {
+          data = await response.json();
+          resultDiv.innerHTML = `
+                    <p><strong>Input:</strong> ${data.input_text}</p>
+                    <p><strong>Prediction:</strong> ${
+                      data.prediction === 1 ? "Hate Speech" : "Not Hate Speech"
+                    }</p>
+                    <p><strong>Probability:</strong> ${(
+                      data.probability * 100
+                    ).toFixed(2)}%</p>
+                `;
+        } else {
+          resultDiv.innerHTML = `<p style="color: red;">Error: ${response.statusText}</p>`;
+        }
+      }
+    </script>
+  </body>
+</html>
