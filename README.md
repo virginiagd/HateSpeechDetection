@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/905667462.svg)](https://doi.org/10.5281/zenodo.15002841)
+
 # HateSpeechDetection
 
 This project aims to detect hate speech in texts. It is designed as part of the course Deep Learning and Software Engineering. 
